@@ -16,7 +16,7 @@ sleep 2
 
 nohup /root/llama.cpp/build/bin/llama-server \
   -m "$GGUF" -ngl 99 -c 65536 --host 0.0.0.0 --port 8080 \
-  --temp 0 --repeat-penalty 1.15 >/root/server.log 2>&1 &
+  --temp 0 --repeat-penalty 1.15 --reasoning off >/root/server.log 2>&1 &
 
 echo "swapped to: $GGUF"
 echo "wait ~25s for load, then: curl http://127.0.0.1:8080/health"

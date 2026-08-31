@@ -80,7 +80,14 @@ EOF
 # serve — OpenAI-compatible on :8080
 /root/llama.cpp/build/bin/llama-server \
   -m /root/models/Qwen3.8-27B-OBLITERATED-Q4_K_M.gguf \
-  -ngl 99 -c 65536 --host 0.0.0.0 --port 8080 --temp 0 --repeat-penalty 1.15
+  -ngl 99 -c 65536 --host 0.0.0.0 --port 8080 \
+  --temp 0 --repeat-penalty 1.15 --reasoning off
+```
+
+> **`--reasoning off` is mandatory** for these abliterated Qwen3.8 GGUFs. With the
+> default `--reasoning auto`, the model enters a degenerate thinking loop
+> (streams `reasoning_content: "/"` forever, never emits an answer). Non-streaming
+> requests happen to mask this; streaming (which Hermes uses) exposes it.
 ```
 
 ### 4. Wire into Hermes
