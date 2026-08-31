@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Uncensored — Status</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --card: #141824;
+    --border: #232a3b;
+    --fg: #e6e9f0;
+    --muted: #8b93a7;
+    --accent: #4f8cff;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55; padding: 24px; max-width: 860px; margin: 0 auto;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: .85rem; margin-bottom: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+  .card h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 10px; }
+  .status-row { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+  .dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .model-name { font-size: 1.15rem; font-weight: 600; }
+  .badge { display: inline-block; background: #1c2436; border: 1px solid var(--border); border-radius: 6px; padding: 1px 8px; font-size: .72rem; color: var(--accent); font-family: var(--mono); margin-left: 4px; }
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 12px; }
+  .kv div { font-size: .85rem; }
+  .kv b { display: block; color: var(--muted); font-weight: 500; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; }
+  code, pre { font-family: var(--mono); }
+  pre { background: #0e1119; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: .8rem; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+  .copy { cursor: pointer; float: right; font-size: .7rem; color: var(--accent); background: none; border: 1px solid var(--border); border-radius: 5px; padding: 2px 8px; }
+  .copy:hover { background: #1c2436; }
+  table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; }
+  td.mono { font-family: var(--mono); font-size: .78rem; }
+  .warn { border-left: 3px solid #e67e22; background: #1a1510; }
+  .warn p { font-size: .82rem; color: #d9a86b; }
+  .foot { color: var(--muted); font-size: .75rem; margin-top: 18px; text-align: center; }
+  a { color: var(--accent); text-decoration: none; }
+  .updated { color: var(--muted); font-size: .75rem; }
+</style>
+</head>
+<body>
+  <h1>AI Uncensored <span class="badge">self-host</span></h1>
+  <div class="sub">Status of the vast.ai uncensored model box · <a href="https://github.com/eminogrande/ai-uncensored-selfhost">repo</a></div>
+
+  <div class="card">
+    <h2>Live model</h2>
+    <div class="status-row">
+      <span class="dot" id="dot"></span>
+      <span class="model-name" id="model-name">loading…</span>
+    </div>
+    <div class="kv" id="kv"></div>
+    <div class="updated" id="updated" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h2>How to query</h2>
+    <pre id="curl"></pre>
+  </div>
+
+  <div class="card">
+    <h2>All models</h2>
+    <table>
+      <thead><tr><th>Model ID</th><th>Note</th><th>Swap command</th></tr></thead>
+      <tbody id="models"></tbody>
+    </table>
+  </div>
+
+  <div class="card warn">
+    <h2>Access for others</h2>
+    <p>The endpoint is local-only (SSH tunnel). To share publicly you must add an API
+    key (llama-server <code>--api-key</code>) and expose the port — otherwise anyone
+    can spend your vast.ai credit on a 0-refusal model. Ask Hermes to set up shared
+    access when you want it; it will add auth first.</p>
+  </div>
+
+  <div class="foot">updated automatically from <code>docs/status.json</code></div>
+
+<script>
+async function load() {
+  try {
+    const r = await fetch("status.json?v=" + Date.now());
+    const s = await r.json();
+    document.getElementById("dot").classList.toggle("live", s.host.status === "live");
+    document.getElementById("model-name").textContent = s.live.name + "  ";
+    const kv = document.getElementById("kv");
+    kv.innerHTML = "";
+    const rows = [
+      ["Quant", s.live.quant],
+      ["Type", s.live.type],
+      ["Gen", s.live.gen_tps + " tok/s"],
+      ["Prompt", s.live.prompt_tps + " tok/s"],
+      ["Context", s.live.context.toLocaleString()],
+      ["GPU", s.host.gpu],
+      ["Cost", "$" + s.host.cost_per_hour + "/hr"],
+      ["Model ID", s.live.model_id]
+    ];
+    for (const [k, v] of rows) {
+      const d = document.createElement("div");
+      d.innerHTML = "<b>" + k + "</b>" + v;
+      kv.appendChild(d);
+    }
+    document.getElementById("updated").textContent = "updated " + s.updated;
+    document.getElementById("curl").textContent =
+      'curl ' + s.endpoint.local + '/chat/completions \\\n' +
+      '  -H "Content-Type: application/json" \\\n' +
+      '  -d \'{"model":"' + s.live.model_id + '","messages":[{"role":"user","content":"hello"}],"max_tokens":256}\'\n\n' +
+      '# tunnel (local only):\n' + s.endpoint.tunnel;
+    const tb = document.getElementById("models");
+    tb.innerHTML = "";
+    for (const m of s.models) {
+      const tr = document.createElement("tr");
+      const live = m.id === s.live.model_id ? " <span class='badge'>live</span>" : "";
+      tr.innerHTML = '<td class="mono">' + m.id + live + "</td><td>" + m.note + '</td><td class="mono">' + m.swap + "</td>";
+      tb.appendChild(tr);
+    }
+  } catch (e) {
+    document.getElementById("model-name").textContent = "status.json not reachable";
+  }
+}
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>

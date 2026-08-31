@@ -1,0 +1,28 @@
+{
+  "live": {
+    "model_id": "qwen3.8-27b-obl",
+    "name": "Qwen3.8-27B OBLITERATED V3",
+    "quant": "Q4_K_M",
+    "type": "uncensored coder (0 refusal)",
+    "gen_tps": 30.6,
+    "prompt_tps": 725,
+    "context": 65536,
+    "gguf": "Qwen3.8-27B-OBLITERATED-Q4_K_M.gguf"
+  },
+  "host": {
+    "gpu": "Tesla V100-32GB",
+    "provider": "vast.ai",
+    "cost_per_hour": 0.16,
+    "status": "live"
+  },
+  "endpoint": {
+    "local": "http://127.0.0.1:8080/v1",
+    "tunnel": "ssh -i ~/.ssh/id_ed25519 -p 59012 -L 8080:127.0.0.1:8080 root@154.12.38.116 -N"
+  },
+  "models": [
+    { "id": "qwen3.8-27b-obl", "name": "Qwen3.8-27B OBLITERATED V3", "note": "best uncensored coder (runnable now)", "swap": "swap_model.sh obl" },
+    { "id": "huihui-qwen38-27b", "name": "Huihui Qwen3.8-27B abliterated", "note": "softer ablation", "swap": "swap_model.sh hui" },
+    { "id": "deepseek-r1-32b-abl", "name": "DeepSeek-R1-Distill-Qwen-32B abliterated", "note": "reasoning (older base)", "swap": "swap_model.sh r1" }
+  ],
+  "updated": "2026-08-31T10:55:00+02:00"
+}
