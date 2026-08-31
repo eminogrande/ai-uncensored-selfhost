@@ -6,7 +6,7 @@
     "type": "0-refusal security model (best ablation, 6/6 probes)",
     "gen_tps": 30,
     "prompt_tps": 725,
-    "context": 65536,
+    "context": 131072,
     "gguf": "Qwen3.8-27B-OBLITERATED-Q6_K.gguf"
   },
   "host": {

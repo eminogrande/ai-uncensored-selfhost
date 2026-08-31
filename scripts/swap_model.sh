@@ -4,7 +4,7 @@
 set -euo pipefail
 
 MODEL="${1:-}"
-CTX=65536
+CTX=131072
 case "$MODEL" in
   obl) GGUF=/root/models/Qwen3.8-27B-OBLITERATED-Q6_K.gguf ;;
   hui) GGUF=/root/models/Huihui-Qwen3.8-27B-abliterated-Q4_K.gguf ;;
