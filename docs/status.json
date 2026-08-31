@@ -3,7 +3,7 @@
     "model_id": "huihui-qwen38-27b",
     "name": "Huihui Qwen3.8-27B abliterated",
     "quant": "Q4_K",
-    "type": "uncensored (0-refusal)",
+    "type": "uncensored security model (0-refusal for pentest/exploit)",
     "gen_tps": 30.3,
     "prompt_tps": 715,
     "context": 65536,
@@ -20,9 +20,8 @@
     "tunnel": "ssh -i ~/.ssh/id_ed25519 -p 59012 -L 8080:127.0.0.1:8080 root@154.12.38.116 -N"
   },
   "models": [
-    { "id": "huihui-qwen38-27b", "name": "Huihui Qwen3.8-27B abliterated", "note": "stable, 0-refusal (live)", "swap": "swap_model.sh hui" },
-    { "id": "qwen3.8-27b-obl", "name": "Qwen3.8-27B OBLITERATED V3", "note": "best ablation but degenerates on some prompts", "swap": "swap_model.sh obl" },
+    { "id": "huihui-qwen38-27b", "name": "Huihui Qwen3.8-27B abliterated", "note": "0-refusal for security work (live)", "swap": "swap_model.sh hui" },
     { "id": "deepseek-r1-32b-abl", "name": "DeepSeek-R1-Distill-Qwen-32B abliterated", "note": "reasoning (older base)", "swap": "swap_model.sh r1" }
   ],
-  "updated": "2026-08-31T14:10:00+02:00"
+  "updated": "2026-08-31T18:50:00+02:00"
 }
